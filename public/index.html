@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta name="author" content="Zidane Wright">
+	<meta name="description" content="An experimental real-time chatroom.">
+    <title>Insynchat</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.css">
+	<link rel="stylesheet" href="/styles/emojipicker.css">
+	<link rel="stylesheet" href="/styles/main.css">
+</head>
+<body>
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="login-card card text-center">
+		<div class="card-body">
+			<form id="login-form">
+				<h1 class="text-logo" style="font-size: 200%;">Insynchat</h1>
+				<div class="form-group">
+				  <label for="username">Username</label>
+				  <input name="username" type="text" class="form-control form-control-sm" id="username" autocomplete="off">
+				  <small id="usernameHelpText" class="form-text text-muted text-left">
+                      You'll need a username so we can identify you.
+                    </small>
+				</div>
+				<div class="form-group">
+				  <label for="chatroomName">Chatroom Name</label>
+				  <input name="chatroom" type="text" class="form-control form-control-sm" id="chatroomName" autocomplete="off">
+				  <small id="chatroomHelpText" class="form-text text-muted text-left">
+                      Create or join a chatroom if you already know it's name.
+                    </small>
+				</div>
+				<button type="submit" class="btn btn-primary">Join Room <i class="icon-login"></i></button>
+			  </form>
+			  <small  class="form-text text-muted">Made by Zidane Wright.</small>
+		</div>
+    </div>
+    <!-- CHATROOM -->
+    <div id="chatroom-screen" class="container-fluid hidden">
+		<div class="row">
+			<div class="col-md-9">
+				<div class="sync-window-head">
+					<!-- To be dynamically updated based on the activity taking place -->
+				</div>
+				<article id="sync-area" class="sync-window">
+				<div class="sync-option-container">
+					<button class="btn btn-default sync-option text-center"><i class="icon-film"></i></button>
+					<button id="draw" class="btn btn-default sync-option"><i class="icon-pencil"></i></button>
+					<button class="btn btn-default sync-option"><i class="icon-game-controller"></i></button>
+				</div>
+				<!-- to be dynamically replaced with canvas, video etc -->
+				<h1 class="sync-window-watermark">Sync Activity Window</h1>
+				</article>
+				<div id="toolbar" class="sync-window-toolbar">
+					<!-- To be dynamically updated based on the sync-event taking place -->
+					<div id="canvas-settings force-hidden">
+							<div id="rad">
+								<div class="pensize-container">
+									<div id="pensize" class="pensize"></div>
+								</div>
+								<div id="decrad" class="rad-control">-</div>
+								<div id="incrad" class="rad-control">+</div>
+							</div>
+							<div id="active-color" class="active-color"></div>
+							<div id="swatch" class="swatch">
+								<!-- will be updated via javascript -->
+							</div>
+							<div id="download-btn" class="download-btn">
+								<i class="fa fa-download fa-2x download-icon"></i>
+							</div>
+							<div id="upload-btn" class="upload-btn">
+								<label for="file-upload"><i class="fa fa-upload fa-2x upload-icon"></i></label>
+								<input name="file-upload" id="file-upload" class="inputfile" type="file">
+							</div>
+						</div>
+				</div>
+			</div>
+			<div class="app-wrapper col-md-3">
+				<div class="console-header text-center">
+                    <strong id="chatroomLabel"><!-- updated by js --></strong>
+                    <p>
+						<a id="chatroomListToggle" href="#">
+							<small>
+								<span id="userListTotal">
+									<!-- Number of chatroom users to be appended here via javascript -->
+								</span> user(s)
+								<i class="icon-arrow-down" style="font-size: 75%;"></i>
+							</small>
+						</a>
+					</p>
+                </div> 
+				<div id="chat" class="message-console">
+                    <div id="chatroomUserListContainer" class="chatroom-user-list hidden">
+						<ul id="userList" style="padding:0; margin:0;">
+							<!-- chatroom users will be appended here via javascript -->
+						</ul>
+                    </div>
+					<div class="messages">
+                        <!-- Messages are appended here -->
+					</div>
+				</div>
+				<div class="input-area">
+				<form id="message-form" action="">
+					<div class="form-group">
+						<div id="emojiContainer"></div>
+						<div class="input-container">
+							<a href="#" id="emojiTrigger" class="emoji-trigger align-middle"><i class="icon-emotsmile"></i></a>
+							<input id="chat-message-input" class="text-field" type="text" name="message" autocomplete="off">
+							<button class="btn btn-primary btn-sm send-btn" type="submit"><i class="icon-paper-plane"></i></button>
+						</div>
+					</div>
+					</form>
+				</div>
+			</div>
+		</div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/rm-emoji-picker@0.3.31/dist/EmojiPicker.min.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	
+	<script src="/scripts/sync.js"></script>
+	<script src="/scripts/canvas-config.js"></script>
+	<script src="/scripts/app.js"></script>
+</body>
+</html>
